@@ -36,5 +36,6 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
-      - name: Week 1
-      - run: bash week1/evaluate.sh
+      # Corrected step
+      - name: Run Week 1 Evaluation
+        run: bash week1/evaluate.sh
