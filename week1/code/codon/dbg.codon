@@ -89,34 +89,67 @@ class DBG:
         children.sort(key=self._get_count, reverse=True)
         return children
 
-    def _get_depth(self, idx: int) -> int:
-        if not self.nodes[idx].visited:
-            self.nodes[idx].visited = True
-            children = self._get_sorted_children(idx)
-            max_depth, max_child = 0, None
-            for child in children:
-                depth = self._get_depth(child)
-                if depth > max_depth:
-                    max_depth, max_child = depth, child
-            self.nodes[idx].depth, self.nodes[idx].max_depth_child = max_depth + 1, max_child
-        return self.nodes[idx].depth
-
     def _reset(self):
         for idx in self.nodes:
             self.nodes[idx].reset()
 
     def _get_longest_path(self) -> List[int]:
-        max_depth, max_idx = 0, None
-        for idx in self.nodes:
-            depth = self._get_depth(idx)
-            if depth > max_depth:
-                max_depth, max_idx = depth, idx
+        # Iteratively calculate depths for all nodes using a post-order traversal
+        # to ensure that a node's depth is calculated only after all its children's depths are known.
+        
+        # The nodes to visit in our traversal
+        nodes_to_process = list(self.nodes.keys())
+        
+        # A stack to manage the nodes for post-order traversal
+        post_order_stack = []
+        
+        # A set to keep track of visited nodes during the initial DFS
+        visited_dfs = set()
+        
+        for node_idx in nodes_to_process:
+            if node_idx not in visited_dfs:
+                # Stack for the current traversal
+                traversal_stack = [node_idx]
+                visited_dfs.add(node_idx)
+                
+                while traversal_stack:
+                    current_node = traversal_stack.pop()
+                    post_order_stack.append(current_node)
+                    
+                    children = self._get_sorted_children(current_node)
+                    for child in children:
+                        if child not in visited_dfs:
+                            visited_dfs.add(child)
+                            traversal_stack.append(child)
 
+        # Now, process the nodes in post-order to calculate depths
+        while post_order_stack:
+            idx = post_order_stack.pop()
+            
+            if not self.nodes[idx].visited:
+                self.nodes[idx].visited = True
+                children = self._get_sorted_children(idx)
+                max_depth, max_child = 0, None
+                for child in children:
+                    # By processing in post-order, child depths are already computed
+                    depth = self.nodes[child].depth
+                    if depth > max_depth:
+                        max_depth, max_child = depth, child
+                self.nodes[idx].depth, self.nodes[idx].max_depth_child = max_depth + 1, max_child
+
+        # Find the node with the overall maximum depth, which is the start of the longest path
+        max_depth, max_idx = -1, None
+        for idx in self.nodes:
+            if self.nodes[idx].depth > max_depth:
+                max_depth, max_idx = self.nodes[idx].depth, idx
+
+        # Reconstruct the longest path
         path: List[int] = []
         curr = max_idx
         while curr is not None:
             path.append(curr)
             curr = self.nodes[curr].max_depth_child
+            
         return path
 
     def _delete_path(self, path: List[int]):

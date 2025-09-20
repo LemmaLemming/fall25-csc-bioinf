@@ -20,9 +20,9 @@ utils.codon:6 (15-39): error: cannot import name 'join' from 'os.path'
 ├─ main.codon:13 (29-38): error: during the realization of read\_data(path: str)  
 ╰─ main.codon:29 (5-9): error: during the realization of main()
 
-were caused by Gemini thinning os.path was a supported library in Codon. Fixed by string concatonation. Overall this was surprisingly easy to do. 
+were caused by Gemini thinning os.path was a supported library in Codon. Fixed by string concatonation. This may have slowed down runtime. 
 
 # PART 3
 
-Created [evaluate.py](http://evaluate.py) instead of .sh 
-
+Created [evaluate.py](http://evaluate.py) instead of .sh \- comment on Piazza by professor mentioned that *“Don’t make a separate script—make it part of the evaluate.sh (or evaluate.py)” .* The results ran on Github’s CI/CD workflow reflected this when looking at ![results](results.png). Overall, codon showed some runtime improvements when testing larger data but actually was worse for small data.   
+ \-release was **not used** due to repeated, frustrating library import errors despite using python library.  This meant that the performance of my code was suboptimal. 
