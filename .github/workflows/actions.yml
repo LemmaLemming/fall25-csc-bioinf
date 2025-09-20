@@ -38,4 +38,5 @@ jobs:
 
       # Corrected step
       - name: Run Week 1 Evaluation
-        run: python week1/evaluate.py
+        run: python evaluate.py
+        working-directory: week1
