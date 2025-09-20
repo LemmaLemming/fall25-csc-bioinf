@@ -38,4 +38,4 @@ jobs:
 
       # Corrected step
       - name: Run Week 1 Evaluation
-        run: bash week1/evaluate.py
+        run: python week1/evaluate.py
